@@ -32,7 +32,7 @@ async def create_app(loop):
     # make routes
     for route in routes:
         app.router.add_route(**route)
-    # app.router.add_static('/static', 'static', name='static')
+    app.router.add_static('/static', settings.STATIC_DIR, name='static')
 
     handler = app.make_handler()
     serv_generator = loop.create_server(handler, settings.HOST, settings.PORT)

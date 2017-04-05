@@ -3,6 +3,7 @@ import logging
 
 BASE_DIR = os.path.dirname(__file__)
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 HOST = '0.0.0.0'
 PORT = '8000'
