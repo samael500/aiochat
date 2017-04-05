@@ -2,12 +2,13 @@ VENV_PATH := $(HOME)/venv/bin
 PROJ_NAME := aiochat
 
 runserver:
-	$(VENV_PATH)/python manage.py runserver 0.0.0.0:8000
+	$(VENV_PATH)/python $(PROJ_NAME)/app.py
 
 start:
 	mkdir -p var
 	$(VENV_PATH)/gunicorn --preload --pid var/gunicorn.pid \
-		-D -b 127.0.0.1:8000 $(PROJ_NAME).wsgi:application
+		-D -b 127.0.0.1:8000 $(PROJ_NAME).wsgi:app \
+		--worker-class $(VENV_PATH)/aiohttp.worker.GunicornWebWorker
 
 stop:
 	kill `cat var/gunicorn.pid` || true
@@ -38,4 +39,3 @@ ci_test: cover_test cover_report lint
 
 wheel_install:
 	$(VENV_PATH)/pip install --no-index -f wheels/ -r requirements.txt
-
