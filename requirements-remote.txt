@@ -1,5 +1,12 @@
-gunicorn==19.4.5
+gunicorn==19.7.1
 pep8==1.7.0
-coverage==4.2
-coverage-badge==0.1.2
-pylama==7.0.7
+coverage==4.3.4
+coverage-badge==0.2.0
+pylama==7.3.3
+aiohttp==2.0.5
+aiohttp-debugtoolbar==0.3.0
+aiohttp-jinja2==0.13.0
+aiohttp-session==0.8.0
+aioredis==0.3.0
+async-timeout==1.2.0
+Jinja2==2.9.6
