@@ -156,10 +156,11 @@ def app():
         run('make wheel_install')
         # run app tasks for devserver start
         # Copy settings local
-        run('cd {project_name} && cp settings_local.py.example settings_local.py'.format(**VARS))
+        # run('cd {project_name} && cp settings_local.py.example settings_local.py'.format(**VARS))
 
 
 def localserver():
+    return
     with cd(VARS['root_dir']):
         # collect static files
         for command in ('migrate --noinput', 'collectstatic --noinput', ):  # 'compilemessages', ):
@@ -179,5 +180,3 @@ def localserver():
 
         # Start runserver
         run('make start', pty=False)
-
-
