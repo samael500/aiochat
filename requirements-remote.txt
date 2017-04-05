@@ -1,0 +1,9 @@
+Django==1.9.5
+django-rainbowtests==0.5.1
+gunicorn==19.4.5
+pep8==1.7.0
+coverage==4.2
+coverage-badge==0.1.2
+pylama==7.0.7
+psycopg2==2.6.1
+redis==2.10.5

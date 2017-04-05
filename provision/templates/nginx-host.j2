@@ -1,0 +1,21 @@
+server {
+
+    listen {{ http_port }};
+    server_name {{ http_host }};
+
+    location /robots.txt {
+        echo "User-Agent: *";
+        echo "Disallow: /";
+    }
+
+    location /static/ {
+        root {{ root_dir }}/{{ project_name }};
+    }
+
+    location / {
+        proxy_pass          http://localhost:8000;
+        proxy_set_header    Host $host;
+        proxy_set_header    X-Real-IP $remote_addr;
+    }
+
+}

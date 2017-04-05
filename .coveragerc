@@ -1,0 +1,12 @@
+[report]
+omit =
+    venv/*
+    */settings*
+    */python?.?/*
+    */site-packages/*
+    */tests/*
+    */migrations/*
+    *wsgi.py
+
+exclude_lines =
+    pragma: no cover
