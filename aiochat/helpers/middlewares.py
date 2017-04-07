@@ -4,7 +4,6 @@ from accounts.models import User
 from database import objects
 
 
-
 async def request_user_middleware(app, handler):
     async def middleware(request):
         session = await get_session(request)

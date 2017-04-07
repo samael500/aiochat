@@ -15,12 +15,12 @@ import settings
 from urls import routes
 from settings import logger
 from helpers.middlewares import request_user_middleware
-from helpers.template_tags import tags
+from helpers.context_processors import messages_processor
 
 
 async def create_app(loop):
     """ Prepare application """
-    redis_pool = await aioredis.create_redis(settings.REDIS_CON, loop=loop)
+    redis_pool = await aioredis.create_pool(settings.REDIS_CON, loop=loop)
     middlewares = [session_middleware(RedisStorage(redis_pool)), request_user_middleware]
     if settings.DEBUG:
         middlewares.append(aiohttp_debugtoolbar.middleware)
@@ -30,11 +30,10 @@ async def create_app(loop):
 
     jinja2_env = aiohttp_jinja2.setup(
         app, loader=jinja2.FileSystemLoader(settings.TEMPLATE_DIR),
-        context_processors=[aiohttp_jinja2.request_processor], )
-    jinja2_env.globals.update(tags)
+        context_processors=[aiohttp_jinja2.request_processor, messages_processor], )
 
     if settings.DEBUG:
-        aiohttp_debugtoolbar.setup(app)
+        aiohttp_debugtoolbar.setup(app, intercept_redirects=False)
 
     # make routes
     for route in routes:

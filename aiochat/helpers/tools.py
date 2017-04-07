@@ -10,9 +10,9 @@ def redirect(request, router_name, *, permanent=False):
     raise web.HTTPFound(url)
 
 
-def add_message(request, kind, message):
+async def add_message(request, kind, message):
     """ Put message into session """
     session = await get_session(request)
-    if 'messages' not in session:
-        session['messages'] = []
-    session['messages'].append((kind, message))
+    messages = session.get('messages', [])
+    messages.append((kind, message))
+    session['messages'] = messages

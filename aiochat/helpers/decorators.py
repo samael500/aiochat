@@ -1,5 +1,5 @@
 from aiohttp import web
-from helpers.shortcuts import redirect, add_message
+from helpers.tools import redirect, add_message
 
 
 def json_response(func):
@@ -14,7 +14,17 @@ def login_required(func):
     """ Allow only auth users """
     async def wrapped(self, *args, **kwargs):
         if self.request.user is None:
-            add_message('info', 'Sign in to continue.')
+            await add_message(self.request, 'info', 'Sign in to continue.')
             redirect(self.request, 'login')
+        return await func(self, *args, **kwargs)
+    return wrapped
+
+
+def anonymous_required(func):
+    """ Allow only anonymous users """
+    async def wrapped(self, *args, **kwargs):
+        if self.request.user is not None:
+            await add_message(self.request, 'info', 'Sign Out to continue.')
+            redirect(self.request, 'index')
         return await func(self, *args, **kwargs)
     return wrapped
