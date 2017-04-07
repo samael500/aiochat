@@ -32,8 +32,8 @@ class LogIn(web.View):
             user = None
         if user is not None:
             await self.login_user(user)
-        redirect(self.request, 'login')
         await add_message(self.request, 'danger', f'User {username} not found')
+        redirect(self.request, 'login')
 
     async def login_user(self, user):
         """ Put user to session and redirect to Index """
