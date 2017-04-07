@@ -21,12 +21,18 @@
     <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
     <div class="menu-list">
         <ul id="menu-content" class="menu-content collapse out">
-            <li>
+            <li{% if request.match_info._route.name == 'index' %} class="collapsed active"{% endif %}>
                 <a href="{{ app.router['index'].url_for() }}">
                     <i class="fa fa-home fa-lg"></i> Main page
                 </a>
             </li>
-            <li data-toggle="collapse" data-target="#rooms" class="collapsed active">
+            <li{% if request.match_info._route.name == 'login' %} class="collapsed active"{% endif %}>
+                <a href="{{ app.router['login'].url_for() }}">
+                    <i class="fa fa-sign-in fa-lg"></i> LogIn
+                    {# <i class="fa fa-sign-out fa-lg"></i> LogOut #}
+                </a>
+            </li>
+            <li data-toggle="collapse" data-target="#rooms" class="collapsed">
                 <a href="#"><i class="fa fa-weixin fa-lg"></i> Chat rooms <span class="arrow"></span></a>
             </li>
             <ul class="sub-menu collapse" id="rooms">
