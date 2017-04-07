@@ -1,7 +1,8 @@
 from aiohttp import web
 
 
-async def json_response(func):
+def json_response(func):
+    """ Wrapper for view method, to return JsonResponse """
     async def wrapped(*args, **kwargs):
         content, status = await func(*args, **kwargs)
         return web.json_response(data=content, status=status)

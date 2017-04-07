@@ -3,31 +3,55 @@ import aiohttp_jinja2
 
 from aiohttp import web
 from aiohttp_session import get_session
+
+from database import objects
 from accounts.models import User
-
 from helpers.shortcuts import redirect
-from helpers.decorators import json_response
 
 
-class Login(web.View):
+
+class LogIn(web.View):
 
     """ Simple Login user by username """
 
     @aiohttp_jinja2.template('accounts/login.html')
     async def get(self):
-        print (dir(self.request))
         session = await get_session(self.request)
         if session.get('user'):
-            redirect(self.request, 'main')
-        return {'conten': 'Please enter login or email'}
+            redirect(self.request, 'index')
+        return {}
 
-    @json_response
+    @aiohttp_jinja2.template('accounts/login.html')
     async def post(self):
         data = await self.request.post()
-        user = User(self.request.db, data)
-        result = await user.check_user()
-        if isinstance(result, dict):
+        username = data.get('username', '').lower()
+        try:
+            user = await objects.get(User, username=username)
+        except User.DoesNotExist:
+            user = None
+        if user is not None:
             session = await get_session(self.request)
-            set_session(session, str(result['_id']), self.request)
-        else:
-            return web.Response(content_type='application/json', text=convert_json(result))
+            session['user'] = str(user_id)
+            session['time'] = time()
+            redirect(self.request, 'index')
+        return {'errors': [f'User "@{data["username"]}" not found']}
+
+
+class LogOut(web.View):
+
+    """ Remove current user from session """
+
+    async def get(self):
+        session = await get_session(self.request)
+        session.pop('user')
+        redirect(self.request, 'index')
+
+
+class Register(web.View):
+
+    """ Remove current user from session """
+
+    async def get(self):
+        session = await get_session(self.request)
+        session.pop('user')
+        redirect(self.request, 'index')
