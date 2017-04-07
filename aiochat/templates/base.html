@@ -12,6 +12,7 @@
     <link href="{{ app.router.static.url(filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ app.router.static.url(filename='font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
     <link href="{{ app.router.static.url(filename='sidebar.css') }}" rel="stylesheet">
+    <link href="{{ app.router.static.url(filename='signin.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -33,7 +34,7 @@
                 </a>
             </li>
             <li data-toggle="collapse" data-target="#rooms" class="collapsed">
-                <a href="#"><i class="fa fa-weixin fa-lg"></i> Chat rooms <span class="arrow"></span></a>
+                <a><i class="fa fa-weixin fa-lg"></i> Chat rooms <span class="arrow"></span></a>
             </li>
             <ul class="sub-menu collapse" id="rooms">
                 <li class="active"><a href="#">CSS3 Animation</a></li>
@@ -64,6 +65,14 @@
 <div class="container" id="main">
     <div class="row">
         <div class="col-md-12">
+
+            {% for error in errors %}
+                <div class="alert alert-danger" role="alert">
+                    <h4 class="alert-heading">Error!</h4>
+                        {{ error }}
+                </div>
+            {% endfor %}
+
             {% block content %}
                 <h4>This is suppose to be in the main content</h4>
             {% endblock %}
