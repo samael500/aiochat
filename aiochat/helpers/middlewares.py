@@ -10,6 +10,6 @@ async def request_user_middleware(app, handler):
         request.user = None
         user_id = session.get('user')
         if user_id is not None:
-            request.user = objects.get(User, pk=user_id)
+            request.user = await objects.get(User, id=user_id)
         return await handler(request)
     return middleware
