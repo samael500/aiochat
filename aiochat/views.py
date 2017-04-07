@@ -10,5 +10,4 @@ class Index(web.View):
 
     @aiohttp_jinja2.template(template_name)
     async def get(self):
-        print (self.request)
         return {}

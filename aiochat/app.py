@@ -1,7 +1,6 @@
 import asyncio
 import aioredis
 import jinja2
-import peewee_async
 
 import aiohttp_jinja2
 import aiohttp_debugtoolbar
@@ -28,7 +27,7 @@ async def create_app(loop):
     app = web.Application(loop=loop, middlewares=middlewares)
     app['websockets'] = []
 
-    jinja2_env = aiohttp_jinja2.setup(
+    aiohttp_jinja2.setup(
         app, loader=jinja2.FileSystemLoader(settings.TEMPLATE_DIR),
         context_processors=[aiohttp_jinja2.request_processor, messages_processor], )
 
@@ -44,6 +43,14 @@ async def create_app(loop):
     serv_generator = loop.create_server(handler, settings.HOST, settings.PORT)
     return serv_generator, handler, app
 
+async def shutdown(server, app, handler):
+    """ Safe close server """
+    server.close()
+    await server.wait_closed()
+    await app.shutdown()
+    await handler.finish_connections(10.0)
+    await app.cleanup()
+
 
 if __name__ == '__main__':
 
@@ -57,6 +64,6 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         logger.debug('Key pressStop server begin')
     finally:
-        loop.run_until_complete(shutdown(serv, app, handler))
+        loop.run_until_complete(shutdown(server, app, handler))
         loop.close()
     logger.debug('Stop server end')

@@ -1,8 +1,6 @@
 import os
 import logging
 
-from peewee import PostgresqlDatabase
-
 BASE_DIR = os.path.dirname(__file__)
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')

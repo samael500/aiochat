@@ -1,4 +1,3 @@
-import json
 import aiohttp_jinja2
 from time import time
 
