@@ -27,12 +27,19 @@
                     <i class="fa fa-home fa-lg"></i> Main page
                 </a>
             </li>
-            <li{% if request.match_info._route.name == 'login' %} class="collapsed active"{% endif %}>
-                <a href="{{ app.router['login'].url_for() }}">
-                    <i class="fa fa-sign-in fa-lg"></i> LogIn
-                    {# <i class="fa fa-sign-out fa-lg"></i> LogOut #}
-                </a>
-            </li>
+            {% if request.user %}
+                <li{% if request.match_info._route.name == 'logout' %} class="collapsed active"{% endif %}>
+                    <a href="{{ app.router['logout'].url_for() }}">
+                        <i class="fa fa-sign-out fa-lg"></i> LogOut {{ request.user.chat_username }}
+                    </a>
+                </li>
+            {% else %}
+                <li{% if request.match_info._route.name == 'login' %} class="collapsed active"{% endif %}>
+                    <a href="{{ app.router['login'].url_for() }}">
+                        <i class="fa fa-sign-in fa-lg"></i> LogIn
+                    </a>
+                </li>
+            {% endif %}
             <li data-toggle="collapse" data-target="#rooms" class="collapsed">
                 <a><i class="fa fa-weixin fa-lg"></i> Chat rooms <span class="arrow"></span></a>
             </li>
