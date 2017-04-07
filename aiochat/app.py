@@ -26,6 +26,7 @@ async def create_app(loop):
 
     app = web.Application(loop=loop, middlewares=middlewares)
     app['websockets'] = []
+    app.redis_pool = redis_pool
 
     aiohttp_jinja2.setup(
         app, loader=jinja2.FileSystemLoader(settings.TEMPLATE_DIR),
@@ -43,10 +44,13 @@ async def create_app(loop):
     serv_generator = loop.create_server(handler, settings.HOST, settings.PORT)
     return serv_generator, handler, app
 
+
 async def shutdown(server, app, handler):
     """ Safe close server """
     server.close()
     await server.wait_closed()
+    app.redis_pool.close()
+    await app.redis_pool.wait_closed()
     await app.shutdown()
     await handler.finish_connections(10.0)
     await app.cleanup()
@@ -62,8 +66,9 @@ if __name__ == '__main__':
     try:
         loop.run_forever()
     except KeyboardInterrupt:
-        logger.debug('Key pressStop server begin')
+        logger.debug('Keyboard Interrupt ^C')
     finally:
+        logger.debug('Stop server begin')
         loop.run_until_complete(shutdown(server, app, handler))
         loop.close()
     logger.debug('Stop server end')
