@@ -10,15 +10,17 @@ from aiohttp import web
 from aiohttp_session import session_middleware
 from aiohttp_session.redis_storage import RedisStorage
 
-from routes import routes
 import settings
+
+from urls import routes
 from settings import logger
+from helpers.middlewares import request_user_middleware
 
 
 async def create_app(loop):
     """ Prepare application """
     redis_pool = await aioredis.create_redis(settings.REDIS_CON, loop=loop)
-    middlewares = [session_middleware(RedisStorage(redis_pool))]
+    middlewares = [session_middleware(RedisStorage(redis_pool)), request_user_middleware]
     if settings.DEBUG:
         middlewares.append(aiohttp_debugtoolbar.middleware)
 
