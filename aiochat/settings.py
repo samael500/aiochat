@@ -1,6 +1,8 @@
 import os
 import logging
 
+from peewee import PostgresqlDatabase
+
 BASE_DIR = os.path.dirname(__file__)
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
@@ -17,3 +19,10 @@ logger.setLevel(logging.DEBUG)
 console = logging.StreamHandler()
 console.setLevel(logging.DEBUG)
 logger.addHandler(console)
+
+DATABASE = {
+    'database': 'aiochat',
+    'password': 'v9464N9Ms',
+    'user': 'aiochat_user',
+    'host': 'localhost',
+}
