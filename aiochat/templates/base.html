@@ -9,71 +9,63 @@
     <meta name="author" content="">
     <title>{% block title %}Simple asyncio chat{% endblock %}</title>
 
-    <link href="{{ app.router.static.url(filename='bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ app.router.static.url(filename='simple-sidebar.css') }}" rel="stylesheet">
+    <link href="{{ app.router.static.url(filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ app.router.static.url(filename='font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
+    <link href="{{ app.router.static.url(filename='sidebar.css') }}" rel="stylesheet">
 </head>
 
 <body>
-    <div id="wrapper" class="toggled">
-        <!-- Sidebar -->
-        <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-                {% block sidebar %}
-                    <li class="sidebar-brand">
-                        <a href="{{ app.router['index'].url_for() }}">
-                            Simple asyncio chat
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">Dashboard</a>
-                    </li>
-                    <li>
-                        <a href="#">Shortcuts</a>
-                    </li>
-                    <li>
-                        <a href="#">Overview</a>
-                    </li>
-                    <li>
-                        <a href="#">Events</a>
-                    </li>
-                    <li>
-                        <a href="#">About</a>
-                    </li>
-                    <li>
-                        <a href="#">Services</a>
-                    </li>
-                    <li>
-                        <a href="#">Contact</a>
-                    </li>
-                {% endblock %}
-            </ul>
-        </div>
 
-        <div id="page-content-wrapper">
+<div class="nav-side-menu">
+    <div class="brand">{{ self.title() }}</div>
+    <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+    <div class="menu-list">
+        <ul id="menu-content" class="menu-content collapse out">
+            <li>
+                <a href="{{ app.router['index'].url_for() }}">
+                    <i class="fa fa-home fa-lg"></i> Main page
+                </a>
+            </li>
+            <li data-toggle="collapse" data-target="#rooms" class="collapsed active">
+                <a href="#"><i class="fa fa-weixin fa-lg"></i> Chat rooms <span class="arrow"></span></a>
+            </li>
+            <ul class="sub-menu collapse" id="rooms">
+                <li class="active"><a href="#">CSS3 Animation</a></li>
+                <li><a href="#">General</a></li>
+                <li><a href="#">Buttons</a></li>
+                <li><a href="#">Tabs &amp; Accordions</a></li>
+                <li><a href="#">Typography</a></li>
+                <li><a href="#">FontAwesome</a></li>
+                <li><a href="#">Slider</a></li>
+                <li><a href="#">Panels</a></li>
+                <li><a href="#">Widgets</a></li>
+                <li><a href="#">Bootstrap Model</a></li>
+            </ul>
+            <li>
+                <a href="#">
+                    <i class="fa fa-user fa-lg"></i> Profile
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fa fa-users fa-lg"></i> Users
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="container" id="main">
+    <div class="row">
+        <div class="col-md-12">
             {% block content %}
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <h1>Simple Sidebar</h1>
-                            <p>This template has a responsive menu toggling system. The menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will appear/disappear. On small screens, the page content will be pushed off canvas.</p>
-                            <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>.</p>
-                            <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>
-                        </div>
-                    </div>
-                </div>
+                <h4>This is suppose to be in the main content</h4>
             {% endblock %}
         </div>
-
     </div>
+</div>
 
     <script src="{{ app.router.static.url(filename='jquery-3.2.0.min.js') }}"></script>
-    <script src="{{ app.router.static.url(filename='bootstrap.min.js') }}"></script>
-    <script>
-    $("#menu-toggle").click(function(e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    });
-    </script>
-
+    <script src="{{ app.router.static.url(filename='bootstrap/js/bootstrap.min.js') }}"></script>
 </body>
 </html>
