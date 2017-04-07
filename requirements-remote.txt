@@ -10,3 +10,5 @@ aiohttp-session==0.8.0
 aioredis==0.3.0
 async-timeout==1.2.0
 Jinja2==2.9.6
+peewee-async==0.5.7
+aiopg==0.13.0
