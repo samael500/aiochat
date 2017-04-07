@@ -27,7 +27,7 @@ class LogIn(web.View):
         data = await self.request.post()
         username = data.get('username', '').lower()
         try:
-            user = await objects.get(User, username=username)
+            user = await objects.get(User, User.username ** username)
         except User.DoesNotExist:
             user = None
         if user is not None:
@@ -72,7 +72,7 @@ class Register(LogIn):
         """ Check is username unique and create new User """
         data = await self.request.post()
         username = data.get('username', '').lower()
-        if await objects.count(User.select().where(User.username == username)):
+        if await objects.count(User.select().where(User.username ** username)):
             await add_message(self.request, 'danger', f'{username} already exists')
             redirect(self.request, 'register')
         user = await objects.create(User, username=username)
