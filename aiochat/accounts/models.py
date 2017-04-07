@@ -10,3 +10,7 @@ class User(peewee.Model):
 
     class Meta:
         database = database
+
+    @property
+    def chat_username(self):
+        return f'@{self.username}'
