@@ -6,7 +6,7 @@ from aiohttp_session import get_session
 
 from database import objects
 from accounts.models import User
-from helpers.shortcuts import redirect
+from helpers.tools import redirect, add_message
 
 
 
@@ -14,13 +14,12 @@ class LogIn(web.View):
 
     """ Simple Login user by username """
 
+    @anonymous_required
     @aiohttp_jinja2.template('accounts/login.html')
     async def get(self):
-        session = await get_session(self.request)
-        if session.get('user'):
-            redirect(self.request, 'index')
         return {}
 
+    @anonymous_required
     @aiohttp_jinja2.template('accounts/login.html')
     async def post(self):
         data = await self.request.post()
@@ -34,7 +33,8 @@ class LogIn(web.View):
             session['user'] = str(user_id)
             session['time'] = time()
             redirect(self.request, 'index')
-        return {'errors': [f'User "@{data["username"]}" not found']}
+        add_message('danger', f'User "@{username}" not found')
+        return {}
 
 
 class LogOut(web.View):
@@ -47,7 +47,7 @@ class LogOut(web.View):
         redirect(self.request, 'index')
 
 
-class Register(web.View):
+class Register(LogIn):
 
     """ Remove current user from session """
 
