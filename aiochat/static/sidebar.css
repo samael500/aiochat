@@ -76,8 +76,8 @@
 .nav-side-menu li .sub-menu li:hover {
   background-color: #020203;
 }
-.nav-side-menu ul .sub-menu li:before,
-.nav-side-menu li .sub-menu li:before {
+.nav-side-menu ul .sub-menu li a:before,
+.nav-side-menu li .sub-menu li a:before {
   font-family: FontAwesome;
   content: "\f105";
   display: inline-block;
@@ -93,6 +93,7 @@
 .nav-side-menu li a {
   text-decoration: none;
   color: #e1ffff;
+  display: block;
 }
 .nav-side-menu li a i {
   padding-left: 10px;

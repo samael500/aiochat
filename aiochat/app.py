@@ -1,6 +1,7 @@
 import asyncio
 import aioredis
 import jinja2
+import peewee_async
 
 import aiohttp_jinja2
 import aiohttp_debugtoolbar
@@ -24,7 +25,9 @@ async def create_app(loop):
     app = web.Application(loop=loop, middlewares=middlewares)
     app['websockets'] = []
 
-    aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader(settings.TEMPLATE_DIR))
+    aiohttp_jinja2.setup(
+        app, loader=jinja2.FileSystemLoader(settings.TEMPLATE_DIR),
+        context_processors=[aiohttp_jinja2.request_processor], )
 
     if settings.DEBUG:
         aiohttp_debugtoolbar.setup(app)
