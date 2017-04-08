@@ -1,9 +1,10 @@
 from aiohttp import web
+from database import objects
 
 
 def redirect(request, router_name, *, permanent=False, **kwargs):
     """ Redirect to given URL name """
-    url = request.app.router[router_name].url().with_query(**kwargs)
+    url = request.app.router[router_name].url(**kwargs)
     if permanent:
         raise web.HTTPMovedPermanently(url)
     raise web.HTTPFound(url)
@@ -21,4 +22,4 @@ async def get_object_or_404(model, **kwargs):
     try:
         return await objects.get(model, **kwargs)
     except model.DoesNotExist:
-        raise web.HTTPNotFound('Object not found')
+        raise web.HTTPNotFound()
