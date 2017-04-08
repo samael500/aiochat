@@ -37,13 +37,13 @@ class LogIn(web.View):
 
     async def login_user(self, user):
         """ Put user to session and redirect to Index """
-        session = await get_session(self.request)
-        session['user'] = str(user.id)
-        session['time'] = time()
+        self.request.session['user'] = str(user.id)
+        self.request.session['time'] = time()
         await add_message(self.request, 'info', f'Hello {user.chat_username}!')
         redirect(self.request, 'index')
 
     async def is_valid(self):
+        """ Get username from post data, and check is correct """
         data = await self.request.post()
         username = data.get('username', '').lower()
         if not re.match(r'^[a-z]\w{0,9}$', username):
@@ -59,15 +59,14 @@ class LogOut(web.View):
 
     @login_required
     async def get(self):
-        session = await get_session(self.request)
-        session.pop('user')
-        await add_message(self.request, 'info', f'You are logged out')
+        self.request.session.pop('user')
+        await add_message(self.request, 'info', 'You are logged out')
         redirect(self.request, 'index')
 
 
 class Register(LogIn):
 
-    """ Remove current user from session """
+    """ Create new user in db """
 
     template_name = 'accounts/register.html'
 
