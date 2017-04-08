@@ -14,7 +14,7 @@ import settings
 from urls import routes
 from settings import logger
 from helpers.middlewares import request_user_middleware
-from helpers.context_processors import messages_processor
+# from helpers.context_processors import messages_processor
 
 
 async def create_app(loop):
@@ -30,7 +30,7 @@ async def create_app(loop):
 
     aiohttp_jinja2.setup(
         app, loader=jinja2.FileSystemLoader(settings.TEMPLATE_DIR),
-        context_processors=[aiohttp_jinja2.request_processor, messages_processor], )
+        context_processors=[aiohttp_jinja2.request_processor], )
 
     if settings.DEBUG:
         aiohttp_debugtoolbar.setup(app, intercept_redirects=False)

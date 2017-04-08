@@ -32,14 +32,14 @@ class LogIn(web.View):
             user = await objects.get(User, User.username ** username)
             await self.login_user(user)
         except User.DoesNotExist:
-            await add_message(self.request, 'danger', f'User {username} not found')
+            add_message(self.request, 'danger', f'User {username} not found')
         redirect(self.request, 'login')
 
     async def login_user(self, user):
         """ Put user to session and redirect to Index """
         self.request.session['user'] = str(user.id)
         self.request.session['time'] = time()
-        await add_message(self.request, 'info', f'Hello {user.chat_username}!')
+        add_message(self.request, 'info', f'Hello {user.chat_username}!')
         redirect(self.request, 'index')
 
     async def is_valid(self):
@@ -47,7 +47,7 @@ class LogIn(web.View):
         data = await self.request.post()
         username = data.get('username', '').lower()
         if not re.match(r'^[a-z]\w{0,9}$', username):
-            await add_message(
+            add_message(
                 self.request, 'warning', 'Username should be alphanumeric, with length [1 .. 10], startswith letter!')
             return False
         return username
@@ -60,7 +60,7 @@ class LogOut(web.View):
     @login_required
     async def get(self):
         self.request.session.pop('user')
-        await add_message(self.request, 'info', 'You are logged out')
+        add_message(self.request, 'info', 'You are logged out')
         redirect(self.request, 'index')
 
 
@@ -82,7 +82,7 @@ class Register(LogIn):
         if not username:
             redirect(self.request, 'register')
         if await objects.count(User.select().where(User.username ** username)):
-            await add_message(self.request, 'danger', f'{username} already exists')
+            add_message(self.request, 'danger', f'{username} already exists')
             redirect(self.request, 'register')
         user = await objects.create(User, username=username)
         await self.login_user(user)
