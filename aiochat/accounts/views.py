@@ -1,6 +1,7 @@
-import aiohttp_jinja2
+import re
 from time import time
 
+import aiohttp_jinja2
 from aiohttp import web
 from aiohttp_session import get_session
 
@@ -24,15 +25,14 @@ class LogIn(web.View):
     @anonymous_required
     async def post(self):
         """ Check username and login """
-        data = await self.request.post()
-        username = data.get('username', '').lower()
+        username = await self.is_valid()
+        if not username:
+            redirect(self.request, 'login')
         try:
             user = await objects.get(User, User.username ** username)
-        except User.DoesNotExist:
-            user = None
-        if user is not None:
             await self.login_user(user)
-        await add_message(self.request, 'danger', f'User {username} not found')
+        except User.DoesNotExist:
+            await add_message(self.request, 'danger', f'User {username} not found')
         redirect(self.request, 'login')
 
     async def login_user(self, user):
@@ -42,6 +42,15 @@ class LogIn(web.View):
         session['time'] = time()
         await add_message(self.request, 'info', f'Hello {user.chat_username}!')
         redirect(self.request, 'index')
+
+    async def is_valid(self):
+        data = await self.request.post()
+        username = data.get('username', '').lower()
+        if not re.match(r'^[a-z]\w{0,9}$', username):
+            await add_message(
+                self.request, 'warning', 'Username should be alphanumeric, with length [1 .. 10], startswith letter!')
+            return False
+        return username
 
 
 class LogOut(web.View):
@@ -70,8 +79,9 @@ class Register(LogIn):
     @anonymous_required
     async def post(self):
         """ Check is username unique and create new User """
-        data = await self.request.post()
-        username = data.get('username', '').lower()
+        username = await self.is_valid()
+        if not username:
+            redirect(self.request, 'register')
         if await objects.count(User.select().where(User.username ** username)):
             await add_message(self.request, 'danger', f'{username} already exists')
             redirect(self.request, 'register')
