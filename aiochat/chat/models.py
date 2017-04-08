@@ -2,7 +2,7 @@ from datetime import datetime
 
 import peewee
 
-from database import database
+from database import database, objects
 from accounts.models import User
 
 
@@ -14,6 +14,16 @@ class Room(peewee.Model):
 
     class Meta:
         database = database
+
+    @classmethod
+    async def all_rooms(cls):
+        """ Return all rooms """
+        return await objects.execute(cls.select().order_by(cls.name))
+
+    async def all_messages(self):
+        """ Filter messages in current room """
+        print (self.messages)
+        # return await objects.execute(.select().order_by(cls.name))
 
 
 class Message(peewee.Model):

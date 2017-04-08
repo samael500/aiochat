@@ -1,3 +1,4 @@
+import re
 import aiohttp_jinja2
 
 from aiohttp import web, MsgType
@@ -15,7 +16,7 @@ class CreateRoom(web.View):
     @login_required
     @aiohttp_jinja2.template('chat/rooms.html')
     async def get(self):
-        return {}
+        return {'chat_rooms': await Room.all_rooms()}
 
     @login_required
     async def post(self):
@@ -40,12 +41,12 @@ class CreateRoom(web.View):
         return roomname
 
 
-class Room(web.View):
+class ChatRoom(web.View):
 
     """ Get room by slug display messages in this Room """
 
     @login_required
     @aiohttp_jinja2.template('chat/chat.html')
     async def get(self):
-        room = await get_object_or_404(Room, name=self.kwargs.get('slug').lower())
-        return {}
+        room = await get_object_or_404(Room, name=self.request.match_info['slug'].lower())
+        return {'chat_rooms': await Room.all_rooms()}
