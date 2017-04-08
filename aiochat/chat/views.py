@@ -4,30 +4,30 @@ from aiohttp import web, MsgType
 
 from chat.models import Room, Message
 from helpers.decorators import login_required
+from helpers.tools import redirect, add_message, get_object_or_404
 from database import objects
 
 
-class ChatRooms(web.View):
+class CreateRoom(web.View):
 
-    """ Get list of all rooms, and create new """
+    """ Create new chat room """
 
     @login_required
     @aiohttp_jinja2.template('chat/rooms.html')
     async def get(self):
-        rooms = await objects.execute(Room.select().order_by(Room.name))
-        return {'rooms': rooms}
+        return {}
 
     @login_required
     async def post(self):
         """ Check is roomname unique and create new User """
         roomname = await self.is_valid()
         if not roomname:
-            redirect(self.request, 'rooms')
-        if await objects.count(User.select().where(User.roomname ** roomname)):
-            add_message(self.request, 'danger', f'{roomname} already exists')
-            redirect(self.request, 'register')
-        user = await objects.create(User, roomname=roomname)
-        await self.login_user(user)
+            redirect(self.request, 'create_room')
+        if await objects.count(Room.select().where(Room.name ** roomname)):
+            add_message(self.request, 'danger', f'Room with {roomname} already exists.')
+            redirect(self.request, 'create_room')
+        room = await objects.create(Room, name=roomname)
+        redirect(self.request, 'room', slug=roomname)
 
     async def is_valid(self):
         """ Get roomname from post data, and check is correct """
@@ -38,3 +38,14 @@ class ChatRooms(web.View):
                 'Room name should be alphanumeric, with length [1 .. 32], startswith letter!'))
             return False
         return roomname
+
+
+class Room(web.View):
+
+    """ Get room by slug display messages in this Room """
+
+    @login_required
+    @aiohttp_jinja2.template('chat/chat.html')
+    async def get(self):
+        room = await get_object_or_404(Room, name=self.kwargs.get('slug').lower())
+        return {}
