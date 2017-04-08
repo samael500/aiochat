@@ -1,3 +1,4 @@
+import sys
 import os
 import logging
 
@@ -24,3 +25,6 @@ DATABASE = {
     'user': 'aiochat_user',
     'host': 'localhost',
 }
+
+
+# TESTING = 'nosetests' in sys.argv[0]
