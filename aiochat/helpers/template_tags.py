@@ -1,6 +1,9 @@
 
-def messages_processor(request):
-    """ Get messages from session and put to context """
+def get_messages(request):
+    """ Get messages from session and empty """
     messages = request.session.get('messages', [])
     request.session['messages'] = []
-    return {'messages': messages}
+    return messages
+
+
+tags = {'get_messages': get_messages}
