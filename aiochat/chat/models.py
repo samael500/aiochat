@@ -22,8 +22,7 @@ class Room(peewee.Model):
 
     async def all_messages(self):
         """ Filter messages in current room """
-        print (self.messages)
-        # return await objects.execute(.select().order_by(cls.name))
+        return await objects.execute(self.messages.order_by(Message.created_date))
 
 
 class Message(peewee.Model):

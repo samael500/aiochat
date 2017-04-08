@@ -27,4 +27,4 @@ DATABASE = {
 }
 
 
-# TESTING = 'nosetests' in sys.argv[0]
+TESTING = 'nosetests' in sys.argv[0]

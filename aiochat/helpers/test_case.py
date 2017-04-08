@@ -1,5 +1,4 @@
-from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
-from aiohttp import web
+from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop  # noqa
 from app import create_app
 
 
@@ -11,10 +10,3 @@ class AioChatTestCase(AioHTTPTestCase):
         """ Return current app """
         serv_generator, handler, app = await create_app(loop)
         return app
-
-
-    # async def test_example(self):
-    #     request = await self.client.request("GET", "/")
-    #     assert request.status == 200
-    #     text = await request.text()
-    #     assert "Hello, world" in text

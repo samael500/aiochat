@@ -3,7 +3,6 @@ from time import time
 
 import aiohttp_jinja2
 from aiohttp import web
-from aiohttp_session import get_session
 
 from database import objects
 from accounts.models import User
