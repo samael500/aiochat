@@ -5,12 +5,22 @@ class IndexTestCase(AioChatTestCase):
 
     """ Testing index app views """
 
-    @unittest_run_loop
-    async def test_ab(self):
-        self.assertEqual(1 + 2, 3)
-        self.assertEqual(1 + 2, 33)
+    url_name = 'index'
 
-        # request = await self.client.request("GET", "/")
-        # assert request.status == 200
-        # text = await request.text()
-        # assert "Hello, world" in text
+    def setUp(self):
+        super().setUp()
+        self.url = self.app.router[self.url_name].url_for()
+
+    @unittest_run_loop
+    async def test_url_reversed(self):
+        """ Url should be / """
+        self.assertEqual(str(self.app.router[self.url_name].url_for()), '/')
+        self.assertEqual(str(self.url), '/')
+
+    @unittest_run_loop
+    async def test_index(self):
+        """ Should get 200 on index page """
+        response = await self.client.get('/')
+        self.assertEqual(response.status, 200)
+        content = await response.text()
+        self.assertIn('Simple asyncio chat', content)
