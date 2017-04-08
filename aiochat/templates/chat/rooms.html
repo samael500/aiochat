@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form class="form-signin" method="POST" action="{{ app.router['room_list'].url_for() }}">
+    <h2 class="form-signin-heading">Create new room</h2>
+        <label for="roomname" class="sr-only">room name</label>
+        <input name="roomname" type="text" id="roomname" class="form-control" maxlength="32" placeholder="room name" required autofocus>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">create room</button>
+</form>
+
+{% endblock %}
