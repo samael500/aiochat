@@ -10,3 +10,5 @@ omit =
 
 exclude_lines =
     pragma: no cover
+
+show_missing = True

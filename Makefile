@@ -25,13 +25,12 @@ pyflakes:
 lint: pep8 pyflakes
 
 test:
-	$(VENV_PATH)/python manage.py test -v 2 --noinput
+	$(VENV_PATH)/nosetests --rednose --force-color aiochat
 
 cover_test:
-	$(VENV_PATH)/coverage run --source=$(PROJ_NAME) manage.py test -v 2 --noinput
+	$(VENV_PATH)/nosetests --rednose --force-color --with-coverage --cover-min-percentage=90 aiochat
 
 cover_report:
-	$(VENV_PATH)/coverage report -m
 	$(VENV_PATH)/coverage html
 	$(VENV_PATH)/coverage-badge > htmlcov/coverage.svg
 
