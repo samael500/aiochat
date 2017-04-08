@@ -33,6 +33,16 @@
                         <i class="fa fa-sign-out fa-lg"></i> LogOut from {{ request.user.chat_username }}
                     </a>
                 </li>
+                <li data-toggle="collapse" data-target="#rooms" class="collapsed{% if request.path.startswith('/chat') %} active{% endif %}">
+                    <a><i class="fa fa-weixin fa-lg"></i> Chat rooms <span class="arrow"></span></a>
+                </li>
+                <ul class="sub-menu collapse{% if request.path.startswith('/chat') %} in{% endif %}" id="rooms">
+                    <li{% if request.match_info._route.name == 'create_room' %} class="active"{% endif %}>
+                        <a href="{{ app.router['create_room'].url_for() }}">Create new room</a></li>
+                    {% for room in chat_rooms %}
+                        <li><a href="{{ app.router['room'].url_for(slug=room.name) }}">{{ room.id }} {{ room.name }}</a></li>
+                    {% endfor %}
+                </ul>
             {% else %}
                 <li{% if request.match_info._route.name == 'login' %} class="collapsed active"{% endif %}>
                     <a href="{{ app.router['login'].url_for() }}">
@@ -40,21 +50,7 @@
                     </a>
                 </li>
             {% endif %}
-            <li data-toggle="collapse" data-target="#rooms" class="collapsed">
-                <a><i class="fa fa-weixin fa-lg"></i> Chat rooms <span class="arrow"></span></a>
-            </li>
-            <ul class="sub-menu collapse" id="rooms">
-                <li class="active"><a href="#">CSS3 Animation</a></li>
-                <li><a href="#">General</a></li>
-                <li><a href="#">Buttons</a></li>
-                <li><a href="#">Tabs &amp; Accordions</a></li>
-                <li><a href="#">Typography</a></li>
-                <li><a href="#">FontAwesome</a></li>
-                <li><a href="#">Slider</a></li>
-                <li><a href="#">Panels</a></li>
-                <li><a href="#">Widgets</a></li>
-                <li><a href="#">Bootstrap Model</a></li>
-            </ul>
+            {#
             <li>
                 <a href="#">
                     <i class="fa fa-user fa-lg"></i> Profile
@@ -65,6 +61,7 @@
                     <i class="fa fa-users fa-lg"></i> Users
                 </a>
             </li>
+            #}
         </ul>
     </div>
 </div>
