@@ -1,10 +1,14 @@
 # Not real migrations, just create tables
+import asyncio
+from app import create_app
 
-from database import objects
 from accounts.models import User
 from chat.models import Room, Message
 
-with objects.allow_sync():
+loop = asyncio.get_event_loop()
+serv_generator, handler, app = loop.run_until_complete(create_app(loop))
+
+with app.objects.allow_sync():
     User.create_table(True)
     Room.create_table(True)
     Message.create_table(True)

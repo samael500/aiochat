@@ -1,6 +1,7 @@
 import asyncio
 import aioredis
 import jinja2
+import peewee_async
 
 import aiohttp_jinja2
 import aiohttp_debugtoolbar
@@ -11,10 +12,10 @@ from aiohttp_session.redis_storage import RedisStorage
 
 import settings
 
-from urls import routes
 from settings import logger
 from helpers.middlewares import request_user_middleware
 from helpers.template_tags import tags
+from helpers.models import database
 
 
 async def create_app(loop):
@@ -35,8 +36,13 @@ async def create_app(loop):
 
     if settings.DEBUG:
         aiohttp_debugtoolbar.setup(app, intercept_redirects=False)
-
+    # db conn
+    database.init(**settings.DATABASE)
+    app.database = database
+    app.database.set_allow_sync(False)
+    app.objects = peewee_async.Manager(app.database)
     # make routes
+    from urls import routes
     for route in routes:
         app.router.add_route(**route)
     app.router.add_static('/static', settings.STATIC_DIR, name='static')
@@ -52,6 +58,7 @@ async def shutdown(server, app, handler):
     await server.wait_closed()
     app.redis_pool.close()
     await app.redis_pool.wait_closed()
+    await app.objects.close()
     await app.shutdown()
     await handler.finish_connections(10.0)
     await app.cleanup()
