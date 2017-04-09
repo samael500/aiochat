@@ -2,19 +2,16 @@
 
 {% block content %}
 
-<blockquote>
-    <h3>Написать чат с браузерным клиентом.</h3>
+<div>
+    <h1>How to use this simple chat?</h1>
 
-    <ul>
-        <li>поддержка чат-групп с более чем 2мя собеседниками
-        <li>возможность добавляться/удаляться в группу. Можно без администрирования, пользователь сам по имени группы может добавить себя или удалить.
-        <li>Задача со *: реализовать администратора группы.
-        <li>любой пользователь группы должен иметь возможность увидеть что происходило в группе, пока пользователь был в офлайне: сообщения от других пользователей, добавление/удаление пользователей из группы 
-        <li>иметь возможность видеть историю группы для новых пользователей группы
+    <ul class="lead">
+        <li><a href="{{ app.router['login'].url_for() }}">Login</a> or create <a href="{{ app.router['register'].url_for() }}">new user</a>
+        <li>Join any chat room, or create <a href="{{ app.router['create_room'].url_for() }}">new</a>
+        <li>Send any text messages in room
+        <li>Use chat commands by send message with text <code>/help</code>
+        <li>Ready, you are awesome ;)
     </ul>
-
-    <p>Для реализации WebSocket API использовать асинхронный Python фреймворк (например Twisted, Tornado, Asyncio или другой по желанию)</p>
-    <p>При реализации подумать о возможности масштабирования системы: какие части системы можно отмасштабировать при росте нагрузки и каким образом.</p>
-</blockquote>
+</div>
 
 {% endblock %}
