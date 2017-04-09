@@ -36,7 +36,7 @@
             <div class="row current-chat-area">
                 <div class="col-md-12">
                     <ul class="media-list" id="messages">
-                        {% for x in 'as' %}
+                        {% for x in 'as22222222222222222' %}
                         <li class="media">
                             <div class="service-msg">
                                 @adsfadsf join chat room
@@ -61,17 +61,22 @@
                 </div>
             </div>
             <div class="row current-chat-footer">
-            <div class="panel-footer">
-                <div class="input-group">
-                  <input type="text" class="form-control">
-                  <span class="input-group-btn">
-                    <button class="btn btn-default" type="button">Send</button>
-                  </span>
-                </div>
+                <div class="panel-footer">
+                    <form class="input-group" id="send">
+                        <input type="text" class="form-control">
+                        <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">Send</button>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+{% endblock %}
+
+{% block extra_scripts %}
+    <script type="text/javascript">var WS_URL = {{ app.router['ws'].url_for(slug=room.name) }};</script>
+    <script src="{{ app.router.static.url(filename='chat.js') }}"></script>
 {% endblock %}
