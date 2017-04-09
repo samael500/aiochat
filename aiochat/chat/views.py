@@ -3,7 +3,7 @@ import aiohttp_jinja2
 
 from aiohttp import web, MsgType
 
-from chat.models import Room
+from chat.models import Room, Message
 from helpers.decorators import login_required
 from helpers.tools import redirect, add_message, get_object_or_404
 
@@ -48,7 +48,9 @@ class ChatRoom(web.View):
     @aiohttp_jinja2.template('chat/chat.html')
     async def get(self):
         room = await get_object_or_404(self.request, Room, name=self.request.match_info['slug'].lower())
-        return {'room': room, 'chat_rooms': await Room.all_rooms(self.request.app.objects), }
+        return {
+            'room': room, 'chat_rooms': await Room.all_rooms(self.request.app.objects),
+            'room_messages': await room.all_messages(self.request.app.objects)}
 
 
 class WebSocket(web.View):
@@ -60,33 +62,35 @@ class WebSocket(web.View):
         user = self.request.user
         app = self.request.app
 
+        def broadcast(message):
+            for peer in app.wslist[room.id]:
+                peer.send_json(message.as_dict())
+
         app.logger.debug('Prepare WS connection')
         ws = web.WebSocketResponse()
         await ws.prepare(self.request)
 
         app.logger.debug('Check current room of WS')
-        if room.id not in app.websockets:
-            app.websockets[room.id] = []
-        app.logger.debug(f'Current ws list of room {app.websockets}')
+        if room.id not in app.wslist:
+            app.wslist[room.id] = []
+        app.logger.debug(f'Current ws list of room {app.wslist}')
 
-        app.websockets[self.room.id].append(ws)
-
-        message = await app.objects.create(User, username=username)
-
-        for ws in app.websockets[self.room.id]:
-            ws.send_str('message')
+        message = await app.objects.create(Message, room=room, user=None, text=f'@{user.username} join chat room')
+        app.wslist[room.id].append(ws)
+        broadcast(message)
 
         async for msg in ws:
             if msg.tp == MsgType.text:
                 if msg.data == 'close':
                     await ws.close()
                 else:
-                    print (msg.data)
+                    message = await app.objects.create(Message, room=room, user=user, text=msg.data)
+                    broadcast(message)
             elif msg.tp == MsgType.error:
                 app.logger.debug(f'Connection closed with exception {ws.exception()}')
 
         # left chat
-        app.websockets[self.room.id].remove(ws)
-        for ws in app.websockets[self.room.id]:
-            ws.send_str('message')
+        message = await app.objects.create(Message, room=room, user=None, text=f'@{user.username} left chat room')
+        app.wslist[self.room.id].remove(ws)
+        broadcast(message)
         return ws

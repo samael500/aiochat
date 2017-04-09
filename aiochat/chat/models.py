@@ -16,6 +16,10 @@ class Room(BaseModel):
         """ Return all rooms """
         return await objects.execute(cls.select())
 
+    async def all_messages(self, objects):
+        """ Return all messages """
+        return await objects.prefetch(self.messages, User.select())
+
     class Meta:
         order_by = ('name', )
 
@@ -37,3 +41,9 @@ class Message(BaseModel):
 
     class Meta:
         order_by = ('created_at', )
+
+    def as_dict(self):
+        """ Return dict repr of message """
+        return {
+            'text': self.text, 'created_at': self.created_at.isoformat(),
+            'user': self.user.username if self.user else None}
