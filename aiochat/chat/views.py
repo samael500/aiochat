@@ -91,7 +91,7 @@ class WebSocket(web.View):
             elif msg.tp == MsgType.error:
                 app.logger.debug(f'Connection closed with exception {ws.exception()}')
 
-        await self.disconnect(user.username, peer)
+        await self.disconnect(user.username, ws)
 
     async def command(self, cmd):
         """ Run chat command """
@@ -110,7 +110,7 @@ class WebSocket(web.View):
                 pass
         elif cmd == '/clear':
             # drop all room messages
-            count = await app.objects.execute(Message.delete().where(Message.room==self.room))
+            count = await app.objects.execute(Message.delete().where(Message.room == self.room))
             app.logger.debug(f'Removed {count} messages')
             for target, peer in app.wslist[self.room.id]:
                 peer.send_json({'cmd': 'empty'})

@@ -46,7 +46,7 @@ async def create_app(loop):
     app.router.add_static('/static', settings.STATIC_DIR, name='static')
 
     app.logger = logger
-    handler = app.make_handler()#access_log=logger)
+    handler = app.make_handler(access_log=logger)
     serv_generator = loop.create_server(handler, settings.HOST, settings.PORT)
     return serv_generator, handler, app
 
