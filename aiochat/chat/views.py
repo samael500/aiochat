@@ -63,10 +63,6 @@ class WebSocket(web.View):
         user = self.request.user
         app = self.request.app
 
-        def broadcast(message):
-            for _, peer in app.wslist[self.room.id]:
-                peer.send_json(message.as_dict())
-
         app.logger.debug('Prepare WS connection')
         ws = web.WebSocketResponse()
         await ws.prepare(self.request)
@@ -77,7 +73,7 @@ class WebSocket(web.View):
             Message, room=self.room, user=None, text=f'@{user.username} join chat room')
         if (user.username, ws) not in app.wslist[self.room.id]:
             app.wslist[self.room.id].append((user.username, ws))
-        broadcast(message)
+        await self.broadcast(message)
 
         async for msg in ws:
             if msg.tp == MsgType.text:
@@ -91,16 +87,11 @@ class WebSocket(web.View):
                             ws.send_json(ans)
                     else:
                         message = await app.objects.create(Message, room=self.room, user=user, text=text)
-                        broadcast(message)
+                        await self.broadcast(message)
             elif msg.tp == MsgType.error:
                 app.logger.debug(f'Connection closed with exception {ws.exception()}')
 
-        # left chat
-        message = await app.objects.create(
-            Message, room=self.room, user=None, text=f'@{user.username} left chat room')
-        app.wslist[self.self.room.id].remove((user.username, ws))
-        broadcast(message)
-        return ws
+        await self.disconnect(user.username, peer)
 
     async def command(self, cmd):
         """ Run chat command """
@@ -112,8 +103,7 @@ class WebSocket(web.View):
                 kill = cmd.split(' ')[1]
                 for target, peer in app.wslist[self.room.id]:
                     if target == kill:
-                        await peer.close()
-                        app.wslist[self.room.id].remove((target, peer))
+                        await self.disconnect(target, peer)
                         app.logger.debug(f'User {target} killed')
                         break
             except IndexError:
@@ -132,3 +122,20 @@ class WebSocket(web.View):
                 ''')}
         else:
             return {'text': 'wrong cmd {cmd}'}
+
+    async def broadcast(self, message):
+        """ Send messages to all in this room """
+        app = self.request.app
+        for _, peer in app.wslist[self.room.id]:
+            peer.send_json(message.as_dict())
+
+    async def disconnect(self, username, socket):
+        """ Close connection and notify broadcast """
+        app = self.request.app
+        if not socket.closed:
+            await socket.close()
+        # left chat
+        message = await app.objects.create(
+            Message, room=self.room, user=None, text=f'@{username} left chat room')
+        app.wslist[self.room.id].remove((username, socket))
+        await self.broadcast(message)
