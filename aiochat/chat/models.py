@@ -14,11 +14,13 @@ class Room(BaseModel):
     @classmethod
     async def all_rooms(cls, objects):
         """ Return all rooms """
-        return await objects.execute(cls.select().order_by(cls.name))
+        return await objects.execute(cls.select())
 
-    async def all_messages(self, objects):
-        """ Filter messages in current room """
-        return await objects.execute(self.messages.order_by(Message.created_at))
+    class Meta:
+        order_by = ('name', )
+
+    def __str__(self):
+        return self.name
 
 
 class Message(BaseModel):
@@ -29,3 +31,9 @@ class Message(BaseModel):
     room = peewee.ForeignKeyField(Room, related_name='messages')
     text = peewee.TextField()
     created_at = peewee.DateTimeField(default=datetime.now)
+
+    def __str__(self):
+        return self.text
+
+    class Meta:
+        order_by = ('created_at', )

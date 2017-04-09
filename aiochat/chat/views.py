@@ -48,4 +48,4 @@ class ChatRoom(web.View):
     @aiohttp_jinja2.template('chat/chat.html')
     async def get(self):
         room = await get_object_or_404(self.request, Room, name=self.request.match_info['slug'].lower())
-        return {'messages': await room.all_messages(self.request.app.objects)}
+        return {'room': room, 'chat_rooms': await Room.all_rooms(self.request.app.objects), }
