@@ -15,13 +15,8 @@ var service_msg = '<div class="service-msg">{text}</div>', msg_template = `
     </div>
 </div>`, $chatArea = $('.current-chat-area'), $messagesContainer = $('#messages');
 
-function str2color(str){
-    var hash = 0;
-    for (var i = 0; i < str.length; i++) {
-       hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    var color = (hash & 0x00FFFFFF).toString(16).toUpperCase();
-    return '00000'.substring(0, 6 - color.length) + color;
+function dateFormat(date) {
+    return [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-') + ' ' +  [date.getHours(), date.getMinutes(), date.getSeconds()].join(':');
 }
 
 function showMessage(message) {
@@ -29,14 +24,19 @@ function showMessage(message) {
     console.log(message);
     var data = jQuery.parseJSON(message.data);
     var date = new Date(data.created_at);
-    if (data.user) {
+    if (data.cmd) {
+        if (data.cmd === 'empty') {
+            $messagesContainer.empty();
+            return;
+        }
+    } else if (data.user) {
         var msg = msg_template
             .replace('{username}', data.user)
             .replace('{text}', data.text)
-            .replace('{time}', date);
+            .replace('{time}', dateFormat(date));
 
     } else {
-        var msg = service_msg.replace('{text}', data.text);
+        var msg = service_msg.replace('{text}', data.text.split('\n').join('<br />'));
     }
     $messagesContainer.append('<li class="media">' + msg + '</li>');
     $chatArea.scrollTop($messagesContainer.height());
@@ -64,6 +64,7 @@ $(document).ready(function(){
         } else {
             console.log('Connection broken');
         }
+        window.location.assign('/');
     };
 
     sock.onerror = function (error) {
