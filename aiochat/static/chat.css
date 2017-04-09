@@ -1,5 +1,5 @@
 .blue { background: blue }
-.grey { background: grey }
+.grey { background: gray }
 .chats-row { height: 100vh; }
 .chats-row div { 
     height: 50%;
@@ -20,7 +20,7 @@
 }
 
 .current-chat { 
-    height: 100vh; 
+    height: 100vh;
     border: 1px solid #ddd;
 }
 
@@ -42,4 +42,13 @@
 .current-chat-footer {
     position: absolute;
     bottom: 0;
+}
+
+div.service-msg {
+    color: gray;
+    font-style: italic;
+}
+
+li.media {
+    border-bottom: 1px solid #ddd;
 }

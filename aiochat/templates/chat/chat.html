@@ -5,7 +5,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12 current-chat">
-            <h4>Chat room #{{ None }}</h4>
+            <h4>Chat room #{{ room }}</h4>
             <hr />
             {#
             <div class="row chat-toolbar-row">
@@ -38,6 +38,11 @@
                     <ul class="media-list" id="messages">
                         {% for x in 'as' %}
                         <li class="media">
+                            <div class="service-msg">
+                                @adsfadsf join chat room
+                            </div>
+                        </li>
+                        <li class="media">
                             <div class="media-body">
                                 <div class="media">
                                     <div class="media-body">
@@ -47,7 +52,6 @@
                                         Donec sit amet ligula enim. Duis vel condimentum massa.Donec sit amet ligula enim. 
                                         Duis vel condimentum massa.
                                         Donec sit amet ligula enim. Duis vel condimentum massa.
-                                        <hr />
                                     </div>
                                 </div>
                             </div>
