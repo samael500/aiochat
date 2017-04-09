@@ -24,16 +24,14 @@ async def create_app(loop):
     middlewares = [session_middleware(RedisStorage(redis_pool)), request_user_middleware]
     if settings.DEBUG:
         middlewares.append(aiohttp_debugtoolbar.middleware)
-
+    # init application
     app = web.Application(loop=loop, middlewares=middlewares)
-    app['websockets'] = []
     app.redis_pool = redis_pool
-
+    app.websockets = {}
     jinja_env = aiohttp_jinja2.setup(
         app, loader=jinja2.FileSystemLoader(settings.TEMPLATE_DIR),
         context_processors=[aiohttp_jinja2.request_processor], )
     jinja_env.globals.update(tags)
-
     if settings.DEBUG:
         aiohttp_debugtoolbar.setup(app, intercept_redirects=False)
     # db conn
@@ -47,7 +45,8 @@ async def create_app(loop):
         app.router.add_route(**route)
     app.router.add_static('/static', settings.STATIC_DIR, name='static')
 
-    handler = app.make_handler(access_log=logger)
+    app.logger = logger
+    handler = app.make_handler()#access_log=logger)
     serv_generator = loop.create_server(handler, settings.HOST, settings.PORT)
     return serv_generator, handler, app
 
