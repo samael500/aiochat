@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 current-chat">
+            <h4>Chat room #{{ None }}</h4>
+            <hr />
+            {#
+            <div class="row chat-toolbar-row">
+                <div class="col-sm-12">
+                    <div class="btn-group chat-toolbar" role="group" aria-label="...">
+                        <button id="chat-leave" class="btn btn-default ticket-option" type="button">
+                          <i class="glyphicon glyphicon-remove-sign"></i> Leave Chat
+                        </button>
+                        <button id="chat-invite" class="btn btn-default ticket-option" type="button">
+                          <i class="glyphicon glyphicon-plus"></i> Invite
+                        </button>
+                        <button id="chat-customer" class="btn btn-default ticket-option" type="button">
+                          <i class="glyphicon glyphicon-user"></i> Open Customer
+                        </button>
+                        <button id="chat-create-ticket" class="btn btn-default ticket-option" type="button">
+                          <i class="glyphicon glyphicon-pencil"></i> Create Ticket
+                        </button>
+                        <button id="chat-add-ticket" class="btn btn-default ticket-option" type="button">
+                          <i class="glyphicon glyphicon-plus"></i> Add to Ticket
+                        </button>
+                        <button id="chat-open-ticket" class="btn btn-default ticket-option" type="button">
+                          <i class="glyphicon glyphicon-open"></i> Open Ticket
+                        </button>
+                    </div>
+                </div>
+            </div>
+            #}
+            <div class="row current-chat-area">
+                <div class="col-md-12">
+                    <ul class="media-list" id="messages">
+                        {% for x in 'as' %}
+                        <li class="media">
+                            <div class="media-body">
+                                <div class="media">
+                                    <div class="media-body">
+                                        <em>@adsfadsf</em> <small class="text-muted">| 23rd June at 5:00pm</small>
+                                        <br />
+                                        Donec sit amet ligula enim. Duis vel condimentum massa.
+                                        Donec sit amet ligula enim. Duis vel condimentum massa.Donec sit amet ligula enim. 
+                                        Duis vel condimentum massa.
+                                        Donec sit amet ligula enim. Duis vel condimentum massa.
+                                        <hr />
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>  
+                </div>
+            </div>
+            <div class="row current-chat-footer">
+            <div class="panel-footer">
+                <div class="input-group">
+                  <input type="text" class="form-control">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Send</button>
+                  </span>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

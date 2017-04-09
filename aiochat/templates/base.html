@@ -13,6 +13,7 @@
     <link href="{{ app.router.static.url(filename='font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
     <link href="{{ app.router.static.url(filename='sidebar.css') }}" rel="stylesheet">
     <link href="{{ app.router.static.url(filename='signin.css') }}" rel="stylesheet">
+    <link href="{{ app.router.static.url(filename='chat.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -40,7 +41,8 @@
                     <li{% if request.match_info._route.name == 'create_room' %} class="active"{% endif %}>
                         <a href="{{ app.router['create_room'].url_for() }}">Create new room</a></li>
                     {% for room in chat_rooms %}
-                        <li><a href="{{ app.router['room'].url_for(slug=room.name) }}">{{ room.id }} {{ room.name }}</a></li>
+                        <li{% if request.match_info._route.name == 'room' and request.match_info['slug'] == room.name %} class="active"{% endif %}>
+                            <a href="{{ app.router['room'].url_for(slug=room.name) }}">#{{ room.name }}</a></li>
                     {% endfor %}
                 </ul>
             {% else %}
