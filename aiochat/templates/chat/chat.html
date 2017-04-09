@@ -77,6 +77,6 @@
 {% endblock %}
 
 {% block extra_scripts %}
-    <script type="text/javascript">var WS_URL = {{ app.router['ws'].url_for(slug=room.name) }};</script>
+    <script type="text/javascript">var WS_URL = "{{ app.router['ws'].url_for(slug=room.name) }}";</script>
     <script src="{{ app.router.static.url(filename='chat.js') }}"></script>
 {% endblock %}

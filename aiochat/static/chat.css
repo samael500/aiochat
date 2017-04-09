@@ -52,3 +52,9 @@ div.service-msg {
 li.media {
     border-bottom: 1px solid #ddd;
 }
+
+@media (max-width: 767px) {
+    .current-chat {
+        margin-top: -60px;
+  }
+}
