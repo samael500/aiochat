@@ -27,7 +27,7 @@ async def create_app(loop):
     # init application
     app = web.Application(loop=loop, middlewares=middlewares)
     app.redis_pool = redis_pool
-    app.websockets = {}
+    app.wslist = {}
     jinja_env = aiohttp_jinja2.setup(
         app, loader=jinja2.FileSystemLoader(settings.TEMPLATE_DIR),
         context_processors=[aiohttp_jinja2.request_processor], )
@@ -53,6 +53,9 @@ async def create_app(loop):
 
 async def shutdown(server, app, handler):
     """ Safe close server """
+    for room in app.wslist.values():
+        for peer in room:
+            peer.send_json({'text': 'Server shutdown'})
     server.close()
     await server.wait_closed()
     app.redis_pool.close()

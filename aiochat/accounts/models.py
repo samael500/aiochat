@@ -8,6 +8,5 @@ class User(BaseModel):
 
     username = peewee.CharField(unique=True, index=True, max_length=10, null=False)
 
-    @property
-    def chat_username(self):
+    def __str__(self):
         return f'@{self.username}'
