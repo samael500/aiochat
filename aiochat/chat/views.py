@@ -6,7 +6,6 @@ from aiohttp import web
 from chat.models import Room
 from helpers.decorators import login_required
 from helpers.tools import redirect, add_message, get_object_or_404
-from database import objects
 
 
 class CreateRoom(web.View):
@@ -16,7 +15,7 @@ class CreateRoom(web.View):
     @login_required
     @aiohttp_jinja2.template('chat/rooms.html')
     async def get(self):
-        return {'chat_rooms': await Room.all_rooms()}
+        return {'chat_rooms': await Room.all_rooms(self.request.app.objects)}
 
     @login_required
     async def post(self):
@@ -24,11 +23,11 @@ class CreateRoom(web.View):
         roomname = await self.is_valid()
         if not roomname:
             redirect(self.request, 'create_room')
-        if await objects.count(Room.select().where(Room.name ** roomname)):
+        if await self.request.app.objects.count(Room.select().where(Room.name ** roomname)):
             add_message(self.request, 'danger', f'Room with {roomname} already exists.')
             redirect(self.request, 'create_room')
-        room = await objects.create(Room, name=roomname)
-        redirect(self.request, 'room', slug=room.name)
+        room = await self.request.app.objects.create(Room, name=roomname)
+        redirect(self.request, 'room', parts=dict(slug=room.name))
 
     async def is_valid(self):
         """ Get roomname from post data, and check is correct """
@@ -48,5 +47,5 @@ class ChatRoom(web.View):
     @login_required
     @aiohttp_jinja2.template('chat/chat.html')
     async def get(self):
-        room = await get_object_or_404(Room, name=self.request.match_info['slug'].lower())
-        return {'messages': await room.all_messages()}
+        room = await get_object_or_404(self.request, Room, name=self.request.match_info['slug'].lower())
+        return {'messages': await room.all_messages(self.request.app.objects)}

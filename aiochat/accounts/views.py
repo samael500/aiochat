@@ -4,7 +4,6 @@ from time import time
 import aiohttp_jinja2
 from aiohttp import web
 
-from database import objects
 from accounts.models import User
 from helpers.tools import redirect, add_message
 from helpers.decorators import anonymous_required, login_required
@@ -28,7 +27,7 @@ class LogIn(web.View):
         if not username:
             redirect(self.request, 'login')
         try:
-            user = await objects.get(User, User.username ** username)
+            user = await self.request.app.objects.get(User, User.username ** username)
             await self.login_user(user)
         except User.DoesNotExist:
             add_message(self.request, 'danger', f'User {username} not found')
@@ -80,8 +79,8 @@ class Register(LogIn):
         username = await self.is_valid()
         if not username:
             redirect(self.request, 'register')
-        if await objects.count(User.select().where(User.username ** username)):
+        if await self.request.app.objects.count(User.select().where(User.username ** username)):
             add_message(self.request, 'danger', f'{username} already exists')
             redirect(self.request, 'register')
-        user = await objects.create(User, username=username)
+        user = await self.request.app.objects.create(User, username=username)
         await self.login_user(user)

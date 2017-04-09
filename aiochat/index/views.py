@@ -12,5 +12,5 @@ class Index(web.View):
     @aiohttp_jinja2.template(template_name)
     async def get(self):
         if self.request.user:
-            return {'chat_rooms': await Room.all_rooms()}
+            return {'chat_rooms': await Room.all_rooms(self.request.app.objects)}
         return {}
