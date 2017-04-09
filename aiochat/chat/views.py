@@ -1,7 +1,7 @@
 import re
 import aiohttp_jinja2
 
-from aiohttp import web
+from aiohttp import web, MsgType
 
 from chat.models import Room
 from helpers.decorators import login_required
@@ -55,32 +55,38 @@ class WebSocket(web.View):
 
     """ Process WS connections """
 
-    @login_required
     async def get(self):
-        self.room = await get_object_or_404(self.request, Room, name=self.request.match_info['slug'].lower())
-        self.user = self.request.user
+        room = await get_object_or_404(self.request, Room, name=self.request.match_info['slug'].lower())
+        user = self.request.user
+        app = self.request.app
 
-        print (self.user)
-        print (self.user.id)
-        print (self.user.username)
-
+        app.logger.debug('Prepare WS connection')
         ws = web.WebSocketResponse()
         await ws.prepare(self.request)
 
-        await broadcast({'text': f'@{user.username} joined chat room.'})
+        app.logger.debug('Check current room of WS')
+        if room.id not in app.websockets:
+            app.websockets[room.id] = []
+        app.logger.debug(f'Current ws list of room {app.websockets}')
 
-        self.request.app['websockets'].remove(ws)
+        app.websockets[self.room.id].append(ws)
 
-        await broadcast({'text': f'@{user.username} left chat room.'})
+        message = await app.objects.create(User, username=username)
 
+        for ws in app.websockets[self.room.id]:
+            ws.send_str('message')
 
+        async for msg in ws:
+            if msg.tp == MsgType.text:
+                if msg.data == 'close':
+                    await ws.close()
+                else:
+                    print (msg.data)
+            elif msg.tp == MsgType.error:
+                app.logger.debug(f'Connection closed with exception {ws.exception()}')
 
-        log.debug('websocket connection closed')
-
+        # left chat
+        app.websockets[self.room.id].remove(ws)
+        for ws in app.websockets[self.room.id]:
+            ws.send_str('message')
         return ws
-
-
-    async def broadcast(self, message):
-        """ Send message to all users in this room """
-        for socket in self.request.app.websockets[self.room.id].values():
-            socket.send_json(message)
