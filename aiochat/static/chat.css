@@ -35,7 +35,7 @@
 
 .current-chat-area {
     padding-top: 10px;
-    overflow: auto;
+    overflow-y: scroll;
     height: 85vh;
 }
 
