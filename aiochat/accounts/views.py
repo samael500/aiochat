@@ -37,7 +37,7 @@ class LogIn(web.View):
         """ Put user to session and redirect to Index """
         self.request.session['user'] = str(user.id)
         self.request.session['time'] = time()
-        add_message(self.request, 'info', f'Hello {user.chat_username}!')
+        add_message(self.request, 'info', f'Hello {user}!')
         redirect(self.request, 'index')
 
     async def is_valid(self):

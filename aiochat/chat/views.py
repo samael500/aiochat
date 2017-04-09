@@ -1,6 +1,7 @@
 import re
 import aiohttp_jinja2
 
+from textwrap import dedent
 from aiohttp import web, MsgType
 
 from chat.models import Room, Message
@@ -58,25 +59,24 @@ class WebSocket(web.View):
     """ Process WS connections """
 
     async def get(self):
-        room = await get_object_or_404(self.request, Room, name=self.request.match_info['slug'].lower())
+        self.room = await get_object_or_404(self.request, Room, name=self.request.match_info['slug'].lower())
         user = self.request.user
         app = self.request.app
 
         def broadcast(message):
-            for peer in app.wslist[room.id]:
+            for _, peer in app.wslist[self.room.id]:
                 peer.send_json(message.as_dict())
 
         app.logger.debug('Prepare WS connection')
         ws = web.WebSocketResponse()
         await ws.prepare(self.request)
+        if self.room.id not in app.wslist:
+            app.wslist[self.room.id] = []
 
-        app.logger.debug('Check current room of WS')
-        if room.id not in app.wslist:
-            app.wslist[room.id] = []
-        app.logger.debug(f'Current ws list of room {app.wslist}')
-
-        message = await app.objects.create(Message, room=room, user=None, text=f'@{user.username} join chat room')
-        app.wslist[room.id].append(ws)
+        message = await app.objects.create(
+            Message, room=self.room, user=None, text=f'@{user.username} join chat room')
+        if (user.username, ws) not in app.wslist[self.room.id]:
+            app.wslist[self.room.id].append((user.username, ws))
         broadcast(message)
 
         async for msg in ws:
@@ -84,13 +84,51 @@ class WebSocket(web.View):
                 if msg.data == 'close':
                     await ws.close()
                 else:
-                    message = await app.objects.create(Message, room=room, user=user, text=msg.data)
-                    broadcast(message)
+                    text = msg.data.strip()
+                    if text.startswith('/'):
+                        ans = await self.command(text)
+                        if ans is not None:
+                            ws.send_json(ans)
+                    else:
+                        message = await app.objects.create(Message, room=self.room, user=user, text=text)
+                        broadcast(message)
             elif msg.tp == MsgType.error:
                 app.logger.debug(f'Connection closed with exception {ws.exception()}')
 
         # left chat
-        message = await app.objects.create(Message, room=room, user=None, text=f'@{user.username} left chat room')
-        app.wslist[self.room.id].remove(ws)
+        message = await app.objects.create(
+            Message, room=self.room, user=None, text=f'@{user.username} left chat room')
+        app.wslist[self.self.room.id].remove((user.username, ws))
         broadcast(message)
         return ws
+
+    async def command(self, cmd):
+        """ Run chat command """
+        app = self.request.app
+        app.logger.debug(f'Chat command {cmd}')
+        if cmd.startswith('/kill'):
+            # unconnect user from room
+            try:
+                kill = cmd.split(' ')[1]
+                for target, peer in app.wslist[self.room.id]:
+                    if target == kill:
+                        await peer.close()
+                        app.wslist[self.room.id].remove((target, peer))
+                        app.logger.debug(f'User {target} killed')
+                        break
+            except IndexError:
+                pass
+        elif cmd == '/clear':
+            # drop all room messages
+            count = await app.objects.execute(Message.delete().where(Message.room==self.room))
+            app.logger.debug(f'Removed {count} messages')
+            for target, peer in app.wslist[self.room.id]:
+                peer.send_json({'cmd': 'empty'})
+        elif cmd == '/help':
+            return {'text': dedent('''\
+                - /help - display this msg
+                - /kill {username} - remove user from room
+                - /clear - empty all messages in room
+                ''')}
+        else:
+            return {'text': 'wrong cmd {cmd}'}
