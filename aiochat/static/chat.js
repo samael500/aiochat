@@ -1,10 +1,3 @@
-try{
-    var sock = new WebSocket('ws://' + window.location.host + WS_URL);
-}
-catch(err){
-    var sock = new WebSocket('wss://' + window.location.host + WS_URL);
-}
-
 var msg_template = `
 <li class="media">
     <div class="media-body">
@@ -38,38 +31,26 @@ function sendMessage(){
 
 $(document).ready(function(){
 
-    $('#send').on('submit', function (event) {
-        event.preventDefault();
-        showMessage('xxx');
-    });
-    $chatArea.scrollTop($messagesContainer.height());
-
-
-    // // send message from form
-    // $('#submit').click(function() {
-    //     sendMessage();
-    // });
-
-    // $('#message').keyup(function(e){
-    //     if(e.keyCode == 13){
-    //         sendMessage();
-    //     }
-    // });
-
-    // // income message handler
-    // sock.onmessage = function(event) {
-    //   showMessage(event.data);
-    // };
-
-    // $('#signout').click(function(){
-    //     window.location.href = "signout"
-    // });
-
-    sock.onopen = function(){
-        console.log('Connection to server started')
+    try{
+        var sock = new WebSocket('ws://' + window.location.host + WS_URL);
+    }
+    catch(err){
+        var sock = new WebSocket('wss://' + window.location.host + WS_URL);
     }
 
-    sock.onclose = function(event){
+    // $('#send').on('submit', function (event) {
+    //     event.preventDefault();
+    //     showMessage('xxx');
+    // });
+    $chatArea.scrollTop($messagesContainer.height());
+
+    sock.onopen = function (event) {
+        console.log(event);
+        console.log('Connection to server started');
+    };
+
+    sock.onclose = function (event) {
+        console.log(event);
         if(event.wasClean){
             console.log('Clean connection end');
         } else {
@@ -77,7 +58,11 @@ $(document).ready(function(){
         }
     };
 
-    sock.onerror = function(error){
+    sock.onerror = function (error) {
         console.log(error);
-    }
+    };
+
+    sock.onmessage = function (data) {
+        alert(data.data);
+    };
 });
