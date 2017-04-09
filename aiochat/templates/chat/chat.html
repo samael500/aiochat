@@ -36,26 +36,26 @@
             <div class="row current-chat-area">
                 <div class="col-md-12">
                     <ul class="media-list" id="messages">
-                        {% for x in 'as22222222222222222' %}
-                        <li class="media">
-                            <div class="service-msg">
-                                @adsfadsf join chat room
-                            </div>
-                        </li>
-                        <li class="media">
-                            <div class="media-body">
-                                <div class="media">
-                                    <div class="media-body">
-                                        <em>@adsfadsf</em> <small class="text-muted">| 23rd June at 5:00pm</small>
-                                        <br />
-                                        Donec sit amet ligula enim. Duis vel condimentum massa.
-                                        Donec sit amet ligula enim. Duis vel condimentum massa.Donec sit amet ligula enim. 
-                                        Duis vel condimentum massa.
-                                        Donec sit amet ligula enim. Duis vel condimentum massa.
+                        {% for message in room_messages %}
+                            {% if not message.user %}
+                                <li class="media">
+                                    <div class="service-msg">
+                                        {{ message.text }}
                                     </div>
-                                </div>
-                            </div>
-                        </li>
+                                </li>
+                            {% else %}
+                                <li class="media">
+                                    <div class="media-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <em>{{ message.user }}</em> <small class="text-muted">| {{ message.created_at.strftime('%Y-%m-%d %H:%I') }}</small>
+                                                <br />
+                                                {{ message.text }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endif %}
                         {% endfor %}
                     </ul>  
                 </div>
@@ -63,7 +63,7 @@
             <div class="row current-chat-footer">
                 <div class="panel-footer">
                     <form class="input-group" id="send">
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" name="text">
                         <span class="input-group-btn">
                         <button class="btn btn-default" type="submit">Send</button>
                         </span>
