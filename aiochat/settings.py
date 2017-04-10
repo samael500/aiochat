@@ -28,3 +28,9 @@ DATABASE = {
 
 
 TESTING = 'nosetests' in sys.argv[0]
+
+
+try:
+    from settings_local import *  # noqa
+except ImportError:
+    pass

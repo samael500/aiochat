@@ -34,10 +34,6 @@ Vagrant.configure(2) do |config|
     Connect to host with:
     http://#{ip_address}/
     or over ssh with `vagrant ssh`
-
-    Admin user credentials:
-      login: root
-      password: 123123
   "
 
   # Set box name
