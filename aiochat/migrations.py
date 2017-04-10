@@ -12,3 +12,9 @@ with app.objects.allow_sync():
     User.create_table(True)
     Room.create_table(True)
     Message.create_table(True)
+
+    for room in ('main', 'flood', 'foo', 'bar', 'baz', ):
+        Room.create(name=room)
+
+    for user in ('Alice', 'Bob', 'Carol', 'Dave', 'Eve', ):
+        User.create(username=user)
