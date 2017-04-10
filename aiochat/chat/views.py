@@ -67,12 +67,11 @@ class WebSocket(web.View):
         ws = web.WebSocketResponse()
         await ws.prepare(self.request)
         if self.room.id not in app.wslist:
-            app.wslist[self.room.id] = []
+            app.wslist[self.room.id] = {}
 
         message = await app.objects.create(
             Message, room=self.room, user=None, text=f'@{user.username} join chat room')
-        if (user.username, ws) not in app.wslist[self.room.id]:
-            app.wslist[self.room.id].append((user.username, ws))
+        app.wslist[self.room.id][user.username] = ws
         await self.broadcast(message)
 
         async for msg in ws:
@@ -101,19 +100,17 @@ class WebSocket(web.View):
         if cmd.startswith('/kill'):
             # unconnect user from room
             try:
-                kill = cmd.split(' ')[1]
-                for target, peer in app.wslist[self.room.id]:
-                    if target == kill:
-                        await peer.close()
-                        app.logger.debug(f'User {target} killed')
-                        break
-            except IndexError:
+                target = cmd.split(' ')[1]
+                peer = app.wslist[self.room.id][target]
+                await self.disconnect(target, peer, silent=True)
+                app.logger.debug(f'User {target} killed')
+            except KeyError:
                 pass
         elif cmd == '/clear':
             # drop all room messages
             count = await app.objects.execute(Message.delete().where(Message.room == self.room))
             app.logger.debug(f'Removed {count} messages')
-            for target, peer in app.wslist[self.room.id]:
+            for peer in app.wslist[self.room.id].values():
                 peer.send_json({'cmd': 'empty'})
         elif cmd == '/help':
             return {'text': dedent('''\
@@ -126,20 +123,17 @@ class WebSocket(web.View):
 
     async def broadcast(self, message):
         """ Send messages to all in this room """
-        for _, peer in self.request.app.wslist[self.room.id]:
+        for peer in self.request.app.wslist[self.room.id].values():
             peer.send_json(message.as_dict())
 
-    async def disconnect(self, username, socket):
+    async def disconnect(self, username, socket, silent=False):
         """ Close connection and notify broadcast """
         app = self.request.app
-        try:
-            for index, (target, peer) in enumerate(app.wslist[self.room.id]):
-                if target == username:
-                    app.wslist[self.room.id].pop(index)
-        except ValueError:
-            app.logger.debug(f'Error remove {username} from {app.wslist[self.room.id]}')
+        app.wslist.pop(username, None)
         if not socket.closed:
             await socket.close()
+        if silent:
+            return
         # left chat
         message = await app.objects.create(
             Message, room=self.room, user=None, text=f'@{username} left chat room')

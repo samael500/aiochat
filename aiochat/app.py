@@ -54,7 +54,7 @@ async def create_app(loop):
 async def shutdown(server, app, handler):
     """ Safe close server """
     for room in app.wslist.values():
-        for _, peer in room:
+        for peer in room.values():
             peer.send_json({'text': 'Server shutdown'})
     server.close()
     await server.wait_closed()
