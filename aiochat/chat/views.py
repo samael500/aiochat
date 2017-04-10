@@ -92,6 +92,7 @@ class WebSocket(web.View):
                 app.logger.debug(f'Connection closed with exception {ws.exception()}')
 
         await self.disconnect(user.username, ws)
+        return ws
 
     async def command(self, cmd):
         """ Run chat command """
