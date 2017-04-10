@@ -161,4 +161,4 @@ def localserver():
     with cd(VARS['root_dir']):
         run('{venv_path}/bin/python {project_name}/migrations.py'.format(**VARS))
         # Start runserver
-        run('make start', pty=False)
+        run('( ( nohup make runserver > /dev/null 2> /dev/null 2>&1 ) & )', pty=False)
