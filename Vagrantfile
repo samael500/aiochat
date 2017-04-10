@@ -1,7 +1,7 @@
 # vi:syntax=ruby
 ip_address = "10.1.1.111"
 hostname = "aiochat"
-box_name = "debian/jessie64"
+box_name = "samael500/aiochat"
 
 SYNC_FOLDER = true
 
