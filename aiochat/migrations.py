@@ -14,7 +14,13 @@ with app.objects.allow_sync():
     Message.create_table(True)
 
     for room in ('main', 'flood', 'foo', 'bar', 'baz', ):
-        Room.create(name=room)
+        try:
+            Room.create(name=room)
+        except:
+            pass
 
     for user in ('Alice', 'Bob', 'Carol', 'Dave', 'Eve', ):
-        User.create(username=user)
+        try:
+            User.create(username=user)
+        except:
+            pass
