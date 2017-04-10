@@ -116,6 +116,7 @@ def nginx():
         'nginx-host.j2', '/etc/nginx/sites-available/{project_name}'.format(**VARS),
         context=VARS, use_jinja=True, backup=False, use_sudo=True, template_dir=VARS['templates_dir'])
     # make s-link to enabled sites
+    sudo('rm -rf /etc/nginx/sites-enabled/default')
     sudo('ln -sf /etc/nginx/sites-available/{project_name} /etc/nginx/sites-enabled/{project_name}'.format(**VARS))
     # restart nginx
     sudo('service nginx restart')
@@ -158,6 +159,6 @@ def app():
 
 def localserver():
     with cd(VARS['root_dir']):
-        run('{venv_path}/bin/python migrations.py {project_name}'.format(**VARS))
+        run('{venv_path}/bin/python {project_name}/migrations.py'.format(**VARS))
         # Start runserver
         run('make start', pty=False)
