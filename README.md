@@ -3,7 +3,7 @@ Simple asyncio chat
 
 Simple async websocket chat written on python [aiohttp](http://aiohttp.readthedocs.io/en/stable/)
 
-About blog post `ru` https://maks.live/articles/python/prostoi-chat-na-aiohttp/
+About blog post `ru` [Простой чат на AioHTTP](https://maks.live/articles/python/prostoi-chat-na-aiohttp/)
 
 ### Try it yourself
 With [Vagrant](https://www.vagrantup.com/downloads.html) and [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
